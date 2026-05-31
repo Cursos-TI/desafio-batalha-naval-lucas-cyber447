@@ -1,40 +1,169 @@
 #include <stdio.h>
 
-// Desafio Batalha Naval - MateCheck
-// Este código inicial serve como base para o desenvolvimento do sistema de Batalha Naval.
-// Siga os comentários para implementar cada parte do desafio.
+#define TAM_TAB 10
+#define TAM_HAB 5
 
 int main() {
-    // Nível Novato - Posicionamento dos Navios
-    // Sugestão: Declare uma matriz bidimensional para representar o tabuleiro (Ex: int tabuleiro[5][5];).
-    // Sugestão: Posicione dois navios no tabuleiro, um verticalmente e outro horizontalmente.
-    // Sugestão: Utilize `printf` para exibir as coordenadas de cada parte dos navios.
 
-    // Nível Aventureiro - Expansão do Tabuleiro e Posicionamento Diagonal
-    // Sugestão: Expanda o tabuleiro para uma matriz 10x10.
-    // Sugestão: Posicione quatro navios no tabuleiro, incluindo dois na diagonal.
-    // Sugestão: Exiba o tabuleiro completo no console, mostrando 0 para posições vazias e 3 para posições ocupadas.
+    // Tabuleiro principal
+    int tabuleiro[TAM_TAB][TAM_TAB] = {0};
 
-    // Nível Mestre - Habilidades Especiais com Matrizes
-    // Sugestão: Crie matrizes para representar habilidades especiais como cone, cruz, e octaedro.
-    // Sugestão: Utilize estruturas de repetição aninhadas para preencher as áreas afetadas por essas habilidades no tabuleiro.
-    // Sugestão: Exiba o tabuleiro com as áreas afetadas, utilizando 0 para áreas não afetadas e 1 para áreas atingidas.
+    // Matrizes das habilidades
+    int cone[TAM_HAB][TAM_HAB] = {0};
+    int cruz[TAM_HAB][TAM_HAB] = {0};
+    int octaedro[TAM_HAB][TAM_HAB] = {0};
 
-    // Exemplos de exibição das habilidades:
-    // Exemplo para habilidade em cone:
-    // 0 0 1 0 0
-    // 0 1 1 1 0
-    // 1 1 1 1 1
-    
-    // Exemplo para habilidade em octaedro:
-    // 0 0 1 0 0
-    // 0 1 1 1 0
-    // 0 0 1 0 0
+    int i, j;
 
-    // Exemplo para habilidade em cruz:
-    // 0 0 1 0 0
-    // 1 1 1 1 1
-    // 0 0 1 0 0
+    // =========================
+    // Posicionamento de navios
+    // =========================
+
+    // Navio horizontal
+    for(i = 2; i <= 4; i++) {
+        tabuleiro[1][i] = 3;
+    }
+
+    // Navio vertical
+    for(i = 4; i <= 6; i++) {
+        tabuleiro[i][7] = 3;
+    }
+
+    // =========================
+    // HABILIDADE CONE
+    // =========================
+    for(i = 0; i < TAM_HAB; i++) {
+        for(j = 0; j < TAM_HAB; j++) {
+
+            int centro = TAM_HAB / 2;
+
+            if(j >= centro - i && j <= centro + i) {
+                cone[i][j] = 1;
+            }
+        }
+    }
+
+    // =========================
+    // HABILIDADE CRUZ
+    // =========================
+    for(i = 0; i < TAM_HAB; i++) {
+        for(j = 0; j < TAM_HAB; j++) {
+
+            if(i == TAM_HAB/2 || j == TAM_HAB/2) {
+                cruz[i][j] = 1;
+            }
+        }
+    }
+
+    // =========================
+    // HABILIDADE OCTAEDRO
+    // =========================
+    for(i = 0; i < TAM_HAB; i++) {
+        for(j = 0; j < TAM_HAB; j++) {
+
+            int centro = TAM_HAB / 2;
+
+            if((i - centro >= 0 ? i - centro : centro - i) +
+               (j - centro >= 0 ? j - centro : centro - j)
+               <= centro) {
+
+                octaedro[i][j] = 1;
+            }
+        }
+    }
+
+    // =========================
+    // Pontos de origem
+    // =========================
+
+    int origemConeL = 2;
+    int origemConeC = 2;
+
+    int origemCruzL = 6;
+    int origemCruzC = 3;
+
+    int origemOctL = 6;
+    int origemOctC = 7;
+
+    // =========================
+    // Sobreposição do CONE
+    // =========================
+    for(i = 0; i < TAM_HAB; i++) {
+        for(j = 0; j < TAM_HAB; j++) {
+
+            int linha = origemConeL + i - TAM_HAB/2;
+            int coluna = origemConeC + j - TAM_HAB/2;
+
+            if(linha >= 0 && linha < TAM_TAB &&
+               coluna >= 0 && coluna < TAM_TAB &&
+               cone[i][j] == 1 &&
+               tabuleiro[linha][coluna] == 0) {
+
+                tabuleiro[linha][coluna] = 5;
+            }
+        }
+    }
+
+    // =========================
+    // Sobreposição da CRUZ
+    // =========================
+    for(i = 0; i < TAM_HAB; i++) {
+        for(j = 0; j < TAM_HAB; j++) {
+
+            int linha = origemCruzL + i - TAM_HAB/2;
+            int coluna = origemCruzC + j - TAM_HAB/2;
+
+            if(linha >= 0 && linha < TAM_TAB &&
+               coluna >= 0 && coluna < TAM_TAB &&
+               cruz[i][j] == 1 &&
+               tabuleiro[linha][coluna] == 0) {
+
+                tabuleiro[linha][coluna] = 5;
+            }
+        }
+    }
+
+    // =========================
+    // Sobreposição do OCTAEDRO
+    // =========================
+    for(i = 0; i < TAM_HAB; i++) {
+        for(j = 0; j < TAM_HAB; j++) {
+
+            int linha = origemOctL + i - TAM_HAB/2;
+            int coluna = origemOctC + j - TAM_HAB/2;
+
+            if(linha >= 0 && linha < TAM_TAB &&
+               coluna >= 0 && coluna < TAM_TAB &&
+               octaedro[i][j] == 1 &&
+               tabuleiro[linha][coluna] == 0) {
+
+                tabuleiro[linha][coluna] = 5;
+            }
+        }
+    }
+
+    // =========================
+    // Exibição do tabuleiro
+    // =========================
+
+    printf("\nTABULEIRO:\n\n");
+
+    for(i = 0; i < TAM_TAB; i++) {
+
+        for(j = 0; j < TAM_TAB; j++) {
+
+            if(tabuleiro[i][j] == 0)
+                printf("~ ");
+
+            else if(tabuleiro[i][j] == 3)
+                printf("N ");
+
+            else if(tabuleiro[i][j] == 5)
+                printf("* ");
+        }
+
+        printf("\n");
+    }
 
     return 0;
 }
